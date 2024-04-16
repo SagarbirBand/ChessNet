@@ -1,42 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
+#include <winsock2.h>
+
 #include "ChessNet.h"
+
+#pragma comment(lib, "ws2_32.lib") // Link with ws2_32.lib
 
 #define PORT 8080
 #define BUFFER_SIZE 1024
 
-int main() 
-{
+int main() {
+    WSADATA wsa;
     ChessGame game;
-    int connfd = 0;
+    SOCKET connfd = 0;
     struct sockaddr_in serv_addr;
 
+    // Initialize Winsock
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+        printf("WSAStartup failed");
+        exit(EXIT_FAILURE);
+    }
+
     // Connect to the server
-    if ((connfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
-    {
+    if ((connfd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORT);
-    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) 
-    {
-        perror("Invalid address/ Address not supported");
-        exit(EXIT_FAILURE);
-    }
+    serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    if (connect(connfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
-    {
+    if (connect(connfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         perror("connect failed");
         exit(EXIT_FAILURE);
     }
 
-    initialize_game(&game);
+       initialize_game(&game);
     display_chessboard(&game);
 
     char buffer[BUFFER_SIZE] = {0};
@@ -71,7 +72,7 @@ int main()
         }
 
         memset(buffer, 0, BUFFER_SIZE);
-        int nbytes = read(connfd, buffer, BUFFER_SIZE);
+        int nbytes = recv(connfd, buffer, BUFFER_SIZE, 0);
 
         if (nbytes <= 0) 
         {
@@ -99,6 +100,7 @@ int main()
     chessboard_to_fen(fen, &game);
     fprintf(temp, "%s", fen);
     fclose(temp);
-    close(connfd);
+    closesocket(connfd);
+    WSACleanup();
     return 0;
 }

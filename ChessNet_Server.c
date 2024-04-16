@@ -1,28 +1,37 @@
+#include <ctype.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <winsock2.h>
+#include <Ws2tcpip.h>
+
 #include "ChessNet.h"
 
-int main() 
-{
+#pragma comment(lib, "ws2_32.lib") // Link with ws2_32.lib
+
+int main() {
+    WSADATA wsa;
     int listenfd, connfd;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
 
+    // Initialize Winsock
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+        printf("WSAStartup failed");
+        exit(EXIT_FAILURE);
+    }
+
     // Create socket
-    if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == 0) 
-    {
+    if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
 
     // Set options to reuse the IP address and IP port if either is already in use
-    if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) 
-    {
-        perror("setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))");
-        return -1;
-    }
-    if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt))) 
-    {
-        perror("setsockopt(server_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt))");
+    if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, (const char *)&opt, sizeof(opt)) == SOCKET_ERROR) {
+        perror("setsockopt(SO_REUSEADDR) failed");
         return -1;
     }
 
@@ -30,28 +39,27 @@ int main()
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
-    if (bind(listenfd, (struct sockaddr *)&address, sizeof(address)) < 0) 
-    {
+    if (bind(listenfd, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR) {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
 
     // Listen for incoming connections
-    if (listen(listenfd, 1) < 0) 
-    {
+    if (listen(listenfd, 1) == SOCKET_ERROR) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
 
     INFO("Server listening on port %d", PORT);
     // Accept incoming connection
-    if ((connfd = accept(listenfd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) 
-    {
+    if ((connfd = accept(listenfd, (struct sockaddr *)&address, &addrlen)) == INVALID_SOCKET) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
 
     INFO("Server accepted connection");
+
+   INFO("Server accepted connection");
 
     //INITIALIZE GAME
     ChessGame game;
@@ -65,7 +73,7 @@ int main()
     while (1)
     {
         memset(buffer, 0, BUFFER_SIZE);
-        int nbytes = read(connfd, buffer, BUFFER_SIZE);
+        int nbytes = recv(connfd, buffer, BUFFER_SIZE, 0);
 
         if (nbytes <= 0) 
         {
@@ -110,7 +118,8 @@ int main()
     }
 
     printf("[Server] Shutting down.\n");
-    close(listenfd);
-    close(connfd);
+    closesocket(listenfd);
+    closesocket(connfd);
+    WSACleanup();
     return 0;
 }

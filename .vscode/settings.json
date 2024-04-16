@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "chessnet.h": "c",
+        "winsock.h": "c",
+        "ws2tcpip.h": "c",
+        "stdlib.h": "c"
+    }
+}
