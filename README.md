@@ -10,13 +10,13 @@ COMMANDS:
 
 "/chessboard" ------------------------------------------ : Displays the current state of the chessboard for the requested player.
 
-"/save <username> -------------------------------------- ex. "/save Maria": Saves the current state of the game under the username. Both server & client can call.
+"/save <username> -------------------------------------- ex. "/save Maria": Saves the current state of the game under the username. Server & client can call.
 
 "/load <username> <int> -------------------------------- ex. "/load Maria 1": Loads a saved game under the username provided and index saved from user
 
 "/import <FEN> ----------------------------------------- ex. "/import 8/8/8/8/8/8/8/8 w": Imports a gamestate given a chess FEN string.
 
-"/forfeit" --------------------------------------------- : Forfeits the game and cuts connection between host & client. The latest FEN is stored in "fen.txt"
+"/forfeit" --------------------------------------------- : Forfeits the game and cuts connection between host & client. FEN is stored in "fen.txt"
 
 NOTES:
 1. Invalid moves will require a reprompt.
