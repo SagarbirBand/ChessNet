@@ -1,6 +1,8 @@
 # ChessNet
 Make Chess Moves between Client and Host
+
 Authored by Sagarbir Bandesha
+
 04/16/24
 
 
