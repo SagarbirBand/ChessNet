@@ -89,26 +89,36 @@ int main() {
             break;
         }
 
-        
-        printf("[Server] Enter message: ");
-        memset(buffer, 0, BUFFER_SIZE);
-        fgets(buffer, BUFFER_SIZE, stdin);
-        buffer[strlen(buffer)-1] = '\0';
-        sendCMD = send_command(&game, buffer, connfd, false);
-
-        while(!(sendCMD == COMMAND_MOVE || sendCMD == COMMAND_FORFEIT))
+        if((recCMD == COMMAND_IMPORT || recCMD == COMMAND_LOAD) && game.currentPlayer == WHITE_PLAYER)
+            continue;
+        else
         {
-            if(sendCMD == COMMAND_SAVE || sendCMD == COMMAND_IMPORT || sendCMD == COMMAND_LOAD || sendCMD == COMMAND_DISPLAY)
-                printf("[Server] Enter a new message: ");
-            else
-                printf("[Server] Enter a valid message: ");
-
+            printf("[Server] Enter message: ");
             memset(buffer, 0, BUFFER_SIZE);
             fgets(buffer, BUFFER_SIZE, stdin);
             buffer[strlen(buffer)-1] = '\0';
             sendCMD = send_command(&game, buffer, connfd, false);
-            
+
+            while(!(sendCMD == COMMAND_MOVE || sendCMD == COMMAND_FORFEIT))
+            {
+
+                //if((sendCMD == COMMAND_IMPORT || sendCMD == COMMAND_LOAD) && game.currentPlayer == WHITE_PLAYER)
+                 //   break;
+
+                if(sendCMD == COMMAND_SAVE || sendCMD == COMMAND_IMPORT || sendCMD == COMMAND_LOAD || sendCMD == COMMAND_DISPLAY)
+                    printf("[Server] Enter a new message: ");
+                else
+                    printf("[Server] Enter a valid message: ");
+
+                memset(buffer, 0, BUFFER_SIZE);
+                fgets(buffer, BUFFER_SIZE, stdin);
+                buffer[strlen(buffer)-1] = '\0';
+                sendCMD = send_command(&game, buffer, connfd, false);
+                
+            }
         }
+
+        //printf("loop skipped");
 
         if (sendCMD == COMMAND_FORFEIT)
         {

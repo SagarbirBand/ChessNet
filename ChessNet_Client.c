@@ -54,6 +54,10 @@ int main() {
         sendCMD = send_command(&game, buffer, connfd, true);
         while(!(sendCMD == COMMAND_MOVE || sendCMD == COMMAND_FORFEIT))
         {
+
+            if((sendCMD == COMMAND_IMPORT || sendCMD == COMMAND_LOAD) && game.currentPlayer == BLACK_PLAYER)
+                break;
+
             if(sendCMD == COMMAND_SAVE || sendCMD == COMMAND_IMPORT || sendCMD == COMMAND_LOAD || sendCMD == COMMAND_DISPLAY)
                 printf("[Client] Saved. Enter a message: ");
             else
