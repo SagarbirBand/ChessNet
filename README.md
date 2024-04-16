@@ -6,6 +6,8 @@ Authored by Sagarbir Bandesha
 04/16/24
 
 
+
+
 COMMANDS:
 
 "/move <starting square><endingsquare>" ---------------- ex. "/move e2e4": Moves a piece to its destination if it is a valid rule of chess.
