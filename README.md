@@ -11,3 +11,11 @@ COMMANDS:
 "/load <username> <int> -------------------------------- ex. "/load Maria 1": Loads a saved game under the username provided and index saved from user obtained from checking game_state.txt.
 "/import <FEN> ----------------------------------------- ex. "/import 8/8/8/8/8/8/8/8 w": Imports a gamestate given a chess FEN string. Example is an empty board with white to move.  
 "/forfeit" --------------------------------------------- : Forfeits the game and cuts connection between host & client. The FEN of the game before forfeit is posted to fen.txt.
+
+NOTES:
+1. Invalid moves will require a reprompt.
+2. Capture limit is 16 before game terminates.
+3. Checks, Checkmates, & King captures should be addressed by the player for the game. These rules are not enforced by ChessNet.
+4. Run .\Server.exe & .\Client.exe on windows bash terminals. Best practice to run both commands on same device so ports can be accessed easily.
+5. Have fun! Make sure to enjoy & post your games online :)
+   
